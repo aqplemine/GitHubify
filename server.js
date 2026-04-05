@@ -14,6 +14,7 @@ const GITHUB_APP_CLIENT_ID = process.env.GITHUB_APP_CLIENT_ID || '';
 const GITHUB_APP_CLIENT_SECRET = process.env.GITHUB_APP_CLIENT_SECRET || '';
 const GITHUB_APP_PRIVATE_KEY = (process.env.GITHUB_APP_PRIVATE_KEY || '').replace(/\\n/g, '\n');
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
+const APP_BASE_URL = process.env.APP_BASE_URL || `http://localhost:${PORT}`;
 
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -57,6 +58,11 @@ function verifyGitHubSignature(rawBody, signatureHeader, secret) {
   }
 
   const expected = `sha256=${crypto.createHmac('sha256', secret).update(rawBody).digest('hex')}`;
+  const expected = `sha256=${crypto
+    .createHmac('sha256', secret)
+    .update(rawBody)
+    .digest('hex')}`;
+
   const expectedBuffer = Buffer.from(expected, 'utf8');
   const headerBuffer = Buffer.from(signatureHeader, 'utf8');
 
@@ -79,6 +85,7 @@ function parseBody(req) {
         const json = text ? JSON.parse(text) : {};
         resolve({ raw, json, text });
       } catch {
+      } catch (error) {
         reject(new Error('Invalid JSON body'));
       }
     });
@@ -156,6 +163,23 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && url.pathname === '/') {
     serveIndex(req, res);
+function serveIndex(res) {
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  const html = fs.readFileSync(indexPath, 'utf8');
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(
+    html
+      .replaceAll('{{APP_BASE_URL}}', APP_BASE_URL)
+      .replaceAll('{{WEBHOOK_URL}}', `${APP_BASE_URL}/webhook/github`)
+      .replaceAll('{{CALLBACK_URL}}', `${APP_BASE_URL}/auth/github/callback`),
+  );
+}
+
+const server = http.createServer(async (req, res) => {
+  const url = new URL(req.url, APP_BASE_URL);
+
+  if (req.method === 'GET' && url.pathname === '/') {
+    serveIndex(res);
     return;
   }
 
@@ -178,6 +202,9 @@ const server = http.createServer(async (req, res) => {
         hasPrivateKey: Boolean(GITHUB_APP_PRIVATE_KEY),
         hasAppSlug: Boolean(GITHUB_APP_SLUG),
       },
+      homepageUrl: APP_BASE_URL,
+      webhookUrl: `${APP_BASE_URL}/webhook/github`,
+      callbackUrl: `${APP_BASE_URL}/auth/github/callback`,
     });
     return;
   }
@@ -293,6 +320,14 @@ const server = http.createServer(async (req, res) => {
         : null,
       error: Array.isArray(apiJson) ? null : apiJson,
     });
+    sendJson(res, 200, {
+      ok: true,
+      message: 'GitHub callback endpoint is reachable. Exchange code for a user token in your auth service.',
+      received: {
+        code: code ? 'present' : 'missing',
+        state: state ? 'present' : 'missing',
+      },
+    });
     return;
   }
 
@@ -301,6 +336,7 @@ const server = http.createServer(async (req, res) => {
     try {
       body = await parseBody(req);
     } catch {
+    } catch (error) {
       sendJson(res, 400, { ok: false, error: 'Invalid JSON' });
       return;
     }
@@ -332,4 +368,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, HOST, () => {
   console.log(`GitHub-ify running on ${HOST}:${PORT}`);
+  console.log(`GitHub-ify running on ${APP_BASE_URL}`);
 });
