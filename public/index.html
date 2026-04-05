@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub-ify</title>
+    <style>
+      body {
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        margin: 0;
+        line-height: 1.5;
+        background: radial-gradient(circle at top, #1a2550 0%, #0b1020 50%, #090d18 100%);
+        color: #e8ecf7;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+      .hero {
+        padding: 28px;
+        border: 1px solid #2f3a62;
+        border-radius: 16px;
+        background: rgba(16, 24, 46, 0.85);
+        margin-bottom: 18px;
+      }
+      .title {
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+      }
+      .subtitle {
+        color: #bfcae8;
+        margin: 8px 0 20px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 10px;
+        border: 1px solid #3f4d7f;
+        padding: 10px 14px;
+        color: #e8ecf7;
+        font-weight: 600;
+      }
+      .btn.primary {
+        background: linear-gradient(90deg, #4b78ff, #6d8fff);
+        border-color: #6d8fff;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px;
+      }
+      .card {
+        border: 1px solid #2a355c;
+        background: rgba(14, 21, 41, 0.88);
+        border-radius: 12px;
+        padding: 18px;
+      }
+      code {
+        background: #182242;
+        padding: 2px 6px;
+        border-radius: 6px;
+      }
+      ul {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      .muted {
+        color: #afbddf;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <h1 class="title">GitHub-ify</h1>
+        <p class="subtitle">
+          A real landing page you can send users to, with one-click GitHub App install and fully wired webhook/callback URLs.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="{{INSTALL_URL}}">Add GitHub App</a>
+          <a class="btn" href="/auth/github/start">Connect GitHub Account</a>
+          <a class="btn" href="/app/config">View App Config JSON</a>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>GitHub App settings values</h2>
+          <ul>
+            <li><strong>Homepage URL:</strong> <code>{{APP_BASE_URL}}/</code></li>
+            <li><strong>Webhook URL:</strong> <code>{{WEBHOOK_URL}}</code></li>
+            <li><strong>Callback URL:</strong> <code>{{CALLBACK_URL}}</code></li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>What works now</h2>
+          <ul>
+            <li><code>POST /webhook/github</code> verifies <code>X-Hub-Signature-256</code>.</li>
+            <li><code>GET /auth/github/start</code> begins OAuth.</li>
+            <li><code>GET /auth/github/callback</code> handles code exchange when secrets are set.</li>
+            <li><code>GET /api/github/install-url</code> returns install link.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h2>Secrets stay server-side</h2>
+          <p class="muted">
+            Put your private key and client secret in environment variables only. Never expose them in frontend JavaScript.
+          </p>
+          <p class="muted">
+            Optional admin endpoint <code>/api/github/app/installations</code> requires <code>x-admin-token</code>.
+          </p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
