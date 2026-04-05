@@ -1,0 +1,12 @@
+{
+  "name": "github-ify",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Starter website and webhook receiver for GitHub-ify",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

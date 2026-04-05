@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub-ify</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        margin: 0;
+        line-height: 1.5;
+        background: #0b1020;
+        color: #e8ecf7;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+      }
+      .card {
+        border: 1px solid #253052;
+        background: #131b33;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      h1, h2 {
+        margin-top: 0;
+      }
+      code {
+        background: #1b2748;
+        padding: 2px 6px;
+        border-radius: 6px;
+      }
+      a {
+        color: #91b4ff;
+      }
+      ul {
+        margin: 8px 0 0;
+      }
+      .muted {
+        color: #b3bfde;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>GitHub-ify</h1>
+      <p class="muted">Starter website for your GitHub App setup and webhook wiring.</p>
+
+      <section class="card">
+        <h2>Use these in your GitHub App settings</h2>
+        <ul>
+          <li><strong>Homepage URL:</strong> <code>{{APP_BASE_URL}}</code></li>
+          <li><strong>Webhook URL:</strong> <code>{{WEBHOOK_URL}}</code></li>
+          <li><strong>Callback URL:</strong> <code>{{CALLBACK_URL}}</code></li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Available endpoints</h2>
+        <ul>
+          <li><code>GET /health</code> - health check</li>
+          <li><code>GET /app/config</code> - returns app URLs in JSON</li>
+          <li><code>GET /auth/github/callback</code> - OAuth callback placeholder</li>
+          <li><code>POST /webhook/github</code> - GitHub webhook receiver with signature check</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Next steps</h2>
+        <ul>
+          <li>Deploy this service (Render, Railway, Fly.io, etc.).</li>
+          <li>Put your deployed HTTPS URL into GitHub App settings.</li>
+          <li>Set <code>GITHUB_WEBHOOK_SECRET</code> in both your app and GitHub App config.</li>
+          <li>Implement persistence for recommendations/favorites.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
